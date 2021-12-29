@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  app:
+    build: . # Dockerfile
+    container_name: keycloak
+    environment:build:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_ADDR=db
+      - DB_VENDOR=mysql
+      - DB_DATABASE=keycloak
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=root
+    volumes:
+      - .custom_themes:opt/jboss/keycloak/themes/custom_themes
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: keycloak_mysql
+    restart: always
+    tty: true
+    ports:
+      - 33306:3306
+    volume:
+      - ./.docker/dbdata:/var/lib/mysql #Jogar o que tem na pasta "./.docker/dbdata" do projeto para "/var/lib/mysql" do container para não perder os dados
+    environment:
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
